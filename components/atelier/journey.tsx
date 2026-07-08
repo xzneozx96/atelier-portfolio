@@ -42,6 +42,7 @@ const MILESTONES = [
     text: "Nhận may theo số đo và làm quà thủ công. Mình muốn làm ít nhưng làm kỹ — mỗi món một câu chuyện.",
     src: "/atelier/q-nhun.jpg",
     alt: "Áo nhún tự may",
+    current: true,
   },
 ];
 
@@ -53,37 +54,41 @@ export function Journey() {
           Con đường tới đây
         </span>
         <h2 className={`${styles.sectionTitle} ${styles.reveal}`} data-reveal>
-          Năm năm trên bục giảng, <em>rồi một chiếc bàn may.</em>
+          Từ sở thích tuổi thơ, <em>đến đam mê nghề nghiệp.</em>
         </h2>
         <p className={`${styles.sectionIntro} ${styles.reveal}`} data-reveal>
-          Một hành trình không thẳng hàng — từ lớp học đến chiếc máy may đầu
-          tiên. Cuộn ngang để đi tiếp.
+          Trong phần giới thiệu này, mình sẽ kể về hành trình mình tìm thấy niềm yêu thích với sáng tạo qua thời trang, hội họa.
         </p>
       </div>
       <div className={styles.journeyPin} data-journey-pin>
         <div className={styles.journeyTrack} data-journey-track>
-          {MILESTONES.map((m) => (
-            <article className={styles.milestone} key={m.year + m.title}>
-              <span className={styles.milestoneYear}>{m.year}</span>
-              <h3 className={styles.milestoneTitle}>{m.title}</h3>
-              <p className={styles.milestoneText}>{m.text}</p>
+          {MILESTONES.map((m, i) => (
+            <article
+              className={`${styles.milestone}${m.current ? ` ${styles.milestoneCurrent}` : ""}`}
+              key={m.year + m.title}
+              style={{ "--i": i } as React.CSSProperties}
+            >
+              <span className={styles.stepNum} aria-hidden="true">
+                {String(i + 1).padStart(2, "0")}
+              </span>
               <div className={styles.milestoneImgWrap}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={m.src}
                   alt={m.alt}
                   className={styles.editorialImg}
-                  width={400}
-                  height={480}
+                  width={520}
+                  height={620}
                 />
+                <span className={styles.yearTag}>{m.year}</span>
+              </div>
+              <div className={styles.milestoneMeta}>
+                <h3 className={styles.milestoneTitle}>{m.title}</h3>
+                <p className={styles.milestoneText}>{m.text}</p>
               </div>
             </article>
           ))}
         </div>
-        <div className={styles.journeyProgress}>
-          <span className={styles.progressBar} data-progress-bar />
-        </div>
-        <div className={styles.journeyHint}>Cuộn</div>
       </div>
     </section>
   );

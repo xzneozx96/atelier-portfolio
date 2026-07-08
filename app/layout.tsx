@@ -1,23 +1,23 @@
 import type { Metadata } from "next";
-import { Newsreader, DM_Sans, Caveat } from "next/font/google";
+import { Newsreader, Be_Vietnam_Pro, Mansalva } from "next/font/google";
 
 import { cn } from "@/lib/utils";
 import "@/app/globals.css";
 
 const newsreader = Newsreader({
-  subsets: ["latin", "latin-ext"],
+  subsets: ["latin", "vietnamese"],
   style: ["normal", "italic"],
   weight: ["300", "400", "500", "600"],
   variable: "--font-newsreader",
 });
-const dmSans = DM_Sans({
-  subsets: ["latin", "latin-ext"],
+const dmSans = Be_Vietnam_Pro({
+  subsets: ["latin", "vietnamese"],
   weight: ["300", "400", "500", "600"],
   variable: "--font-dm-sans",
 });
-const caveat = Caveat({
-  subsets: ["latin", "latin-ext"],
-  weight: ["400", "500", "600", "700"],
+const caveat = Mansalva({
+  subsets: ["latin", "vietnamese"],
+  weight: ["400"],
   variable: "--font-caveat",
 });
 

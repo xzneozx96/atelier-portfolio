@@ -15,7 +15,7 @@ export function Manifesto() {
           thiện, cho một người mình rất có thể sẽ gặp.
         </p>
         <div className={styles.manifestoSig} data-manifesto-sig>
-          — Quỳnh, từ bàn may
+          — Đặng Diễm Quỳnh
         </div>
       </div>
     </section>

@@ -14,11 +14,14 @@ export function SignatureScale() {
           height={475}
         />
         <div className={styles.scaleCaption} data-scale-caption>
-          <span className={styles.captionLabel}>Bàn may tại nhà — 2025</span>
-          <span className={styles.captionText}>
-            Mọi thứ bắt đầu ở đây: một chiếc máy may, một cuộn chỉ, và rất
-            nhiều buổi tối.
+          <span className={styles.scaleWordmark} aria-hidden="true">
+            Quỳnh
           </span>
+          <h2 className={styles.captionHeadline}>Mọi thứ bắt đầu ở đây.</h2>
+          <span className={styles.captionLabel}>Bàn may tại nhà — 2025</span>
+          <p className={styles.captionNote}>
+            một chiếc máy may, một cuộn chỉ, và một chú mèo thích hóng hớt.
+          </p>
         </div>
       </div>
     </section>

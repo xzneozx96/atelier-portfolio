@@ -47,7 +47,7 @@ export function CraftStory() {
           Nơi điều này bắt đầu
         </span>
         <h2 className={`${styles.sectionTitle} ${styles.reveal}`} data-reveal>
-          Hội hoạ đã dẫn mình <em>tới đường may.</em>
+          Hội họa nuôi con mắt <br /> <em>con mắt nuôi đường may.</em>
         </h2>
       </div>
       <div className={styles.storyTrack}>

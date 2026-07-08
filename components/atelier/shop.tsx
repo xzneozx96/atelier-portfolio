@@ -6,7 +6,6 @@ const PRODUCTS = [
     tagRot: "-8deg",
     src: "/atelier/q-linen.jpg",
     alt: "Váy linen",
-    price: "450.000₫",
     name: "Váy linen",
     meta: "May theo đơn · linen · nhiều màu",
   },
@@ -15,7 +14,6 @@ const PRODUCTS = [
     tagRot: "6deg",
     src: "/atelier/q-babydoll.jpg",
     alt: "Áo baby doll",
-    price: "290.000₫",
     name: "Áo baby doll",
     meta: "Washed linen 180gsm · chui đầu",
   },
@@ -24,7 +22,6 @@ const PRODUCTS = [
     tagRot: "-4deg",
     src: "/atelier/q-chiffon.jpg",
     alt: "Chân váy chiffon",
-    price: "320.000₫",
     name: "Chân váy chiffon",
     meta: "Hai lớp chiffon · cạp chun",
   },
@@ -33,7 +30,6 @@ const PRODUCTS = [
     tagRot: "9deg",
     src: "/atelier/q-tote.jpg",
     alt: "Túi tote sticker mèo",
-    price: "250.000₫",
     name: "Túi tote sticker mèo",
     meta: "Canvas · sticker vẽ tay · thêu tay",
   },
@@ -42,7 +38,6 @@ const PRODUCTS = [
     tagRot: "-7deg",
     src: "/atelier/q-milkmaid.jpg",
     alt: "Váy milkmaid",
-    price: "380.000₫",
     name: "Váy milkmaid",
     meta: "Caro nhún ngực · tùng xoè",
   },
@@ -51,7 +46,6 @@ const PRODUCTS = [
     tagRot: "5deg",
     src: "/atelier/q-crossbody.jpg",
     alt: "Túi đeo chéo",
-    price: "400.000₫",
     name: "Túi đeo chéo",
     meta: "Vải bố · lót cotton · nhiều ngăn",
   },
@@ -60,7 +54,6 @@ const PRODUCTS = [
     tagRot: "-6deg",
     src: "/atelier/q-cami.jpg",
     alt: "Áo cami ren",
-    price: "260.000₫",
     name: "Áo cami",
     meta: "Ren trắng · nơ buộc ngực",
   },
@@ -69,7 +62,6 @@ const PRODUCTS = [
     tagRot: "8deg",
     src: "/atelier/q-quanhoa.jpg",
     alt: "Quần hoa ống rộng",
-    price: "300.000₫",
     name: "Quần hoa",
     meta: "Ống rộng · cạp chun · vải mát",
   },
@@ -83,11 +75,11 @@ export function Shop() {
           Cửa hàng
         </span>
         <h2 className={`${styles.sectionTitle} ${styles.reveal}`} data-reveal>
-          Một giá đồ nhỏ, <em>xếp bằng tay.</em>
+          Một tiệm may nhỏ, <em>hoàn toàn thủ công.</em>
         </h2>
         <p className={`${styles.sectionIntro} ${styles.reveal}`} data-reveal>
           Làm theo đơn, mỗi món một rập. Khi một mẫu hết, mình sẽ may lại khi
-          có thời gian. Cuộn ngang để xem cả giá đồ.
+          có thời gian. Cuộn ngang để xem cả bộ sưu tập.
         </p>
       </div>
       <div className={styles.shopPin} data-shop-pin>
@@ -112,14 +104,13 @@ export function Shop() {
                   width={340}
                   height={450}
                 />
-                <div className={styles.hangTag}>{p.price}</div>
+                <div className={styles.hangTag}>{p.name}</div>
               </div>
               <h3 className={styles.productName}>{p.name}</h3>
               <p className={styles.productMeta}>{p.meta}</p>
             </article>
           ))}
         </div>
-        <div className={styles.journeyHint}>Cuộn</div>
       </div>
       <div className={styles.shopCta}>
         <span className={styles.ctaSecondary}>Xem giỏ hàng &amp; đặt may →</span>

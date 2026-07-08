@@ -5,10 +5,10 @@ export function Contact() {
     <section className={styles.contact} id="contact">
       <div className={styles.contactHeader}>
         <span className={`${styles.sectionLabel} ${styles.reveal}`} data-reveal>
-          Chào bạn
+          Liên hệ · Đặt may riêng
         </span>
         <h2 className={`${styles.sectionTitle} ${styles.reveal}`} data-reveal>
-          Đặt may một món, <em>hoặc chỉ để nhắn hỏi.</em>
+          Cùng mình làm một thứ <br /> <em>chỉ của riêng bạn.</em>
         </h2>
         <p className={`${styles.sectionIntro} ${styles.reveal}`} data-reveal>
           Mình đọc mọi tin nhắn. Nếu muốn đặt may, cho mình biết bạn cần gì —
@@ -39,9 +39,7 @@ export function Contact() {
         <div className={styles.contactRow}>
           <span className={styles.contactLabel}>Địa chỉ</span>
           <span className={styles.contactValue}>
-            TP. Hồ Chí Minh,
-            <br />
-            nhận khách hẹn trước
+            TP. Hồ Chí Minh
           </span>
         </div>
       </div>

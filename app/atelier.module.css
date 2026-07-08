@@ -44,7 +44,7 @@ html {
   inset: 0;
   pointer-events: none;
   z-index: 100;
-  opacity: 0.5;
+  opacity: 0.12;
   mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.12'/></svg>");
 }
@@ -192,12 +192,20 @@ html {
 @media (max-width: 760px) {
   .siteNav {
     padding: 1rem 1.25rem;
+    gap: 1rem;
   }
   .navLinks {
     gap: 1rem;
     font-size: 0.75rem;
   }
   .navLinks a:nth-child(n + 4) {
+    display: none;
+  }
+}
+@media (max-width: 560px) {
+  /* wordmark + links collide at phone widths (no mobile menu); keep the
+     "Q" mark, drop the long name so the nav links have room */
+  .atelierText {
     display: none;
   }
 }
@@ -208,7 +216,7 @@ html {
   align-items: center;
   gap: 0.75rem;
   font-family: var(--font-dm-sans), sans-serif;
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.24em;
   color: var(--terracotta);
@@ -254,16 +262,7 @@ html {
   transform: translateY(0);
 }
 
-/* ============ HERO ============ */
-.hero {
-  position: relative;
-  min-height: 100vh;
-  padding: 9rem 2.5rem 6rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  overflow: hidden;
-}
+/* ============ HERO (shared bits used by the bleed hero) ============ */
 .heroEyebrow {
   display: inline-flex;
   align-items: center;
@@ -290,66 +289,6 @@ html {
   50% {
     box-shadow: 0 0 0 8px rgba(232, 155, 108, 0.08);
   }
-}
-
-.heroContent {
-  position: relative;
-  z-index: 5;
-  max-width: min(64%, 880px);
-}
-@media (max-width: 1024px) {
-  .heroContent {
-    max-width: 100%;
-  }
-}
-.heroHeadline {
-  font-family: var(--font-newsreader), Georgia, serif;
-  font-style: italic;
-  font-weight: 400;
-  font-size: clamp(2.75rem, 7.6vw, 7.5rem);
-  line-height: 1;
-  letter-spacing: -0.028em;
-  color: var(--espresso);
-  max-width: 15ch;
-  margin: 0;
-  position: relative;
-  z-index: 5;
-}
-.heroHeadline :global(.char) {
-  display: inline-block;
-  opacity: 0;
-  transform: translateY(0.45em) rotate(4deg);
-  will-change: transform, opacity;
-}
-.inlinePhoto {
-  display: inline-block;
-  width: 0.92em;
-  height: 0.92em;
-  border-radius: 50%;
-  vertical-align: -0.12em;
-  margin: 0 0.06em;
-  overflow: hidden;
-  box-shadow: 0 12px 30px rgba(42, 26, 18, 0.22);
-  border: 3px solid var(--paper);
-  opacity: 0;
-  transform: scale(0.6) rotate(-8deg);
-  will-change: transform, opacity;
-  position: relative;
-}
-.inlinePhoto img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 50% 28%;
-  filter: sepia(0.2) saturate(0.88) brightness(1.04);
-}
-.inlinePhoto::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  box-shadow: inset 0 -10px 20px rgba(42, 26, 18, 0.15);
-  pointer-events: none;
 }
 
 .heroSub {
@@ -426,24 +365,8 @@ html {
   border-color: var(--clay-rose-deep);
 }
 
-.heroMeta {
-  margin-top: 4rem;
-  display: flex;
-  gap: 3rem;
-  flex-wrap: wrap;
-  padding-top: 2rem;
-  border-top: 1px solid var(--line);
-  max-width: 720px;
-  position: relative;
-  z-index: 5;
-}
-.heroMeta > div {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
 .metaLabel {
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.18em;
   color: var(--espresso-mute);
@@ -456,74 +379,289 @@ html {
   color: var(--espresso);
 }
 
-.memory {
-  position: absolute;
-  width: 230px;
-  padding: 12px 12px 44px;
-  background: var(--paper);
-  box-shadow:
-    0 30px 55px -15px rgba(42, 26, 18, 0.3),
-    0 0 0 1px rgba(42, 26, 18, 0.04);
-  z-index: 2;
+/* ============ HERO VARIANT 1 — EDITORIAL BLEED + OVERLAP ============ */
+.heroBleed {
+  position: relative;
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  /* fixed-height row: the image's extra headroom overflows and is clipped
+     rather than stretching the row (which would detach the tag + meta) */
+  grid-template-rows: 100dvh;
+  column-gap: clamp(2rem, 4vw, 4.5rem);
+  /* bleed off the left edge, hold a gutter on the right */
+  padding: 0 clamp(2rem, 5vw, 5rem) 0 0;
+  overflow: hidden;
+}
+.heroBleedImage {
+  grid-column: 1;
+  grid-row: 1;
+  position: relative;
+  align-self: start;
+  width: 100%;
+  /* 16vh of headroom below the fold (clipped by the section) so the
+     yPercent:-12 scroll parallax never exposes the sand underneath */
+  min-height: calc(100dvh + 16vh);
+  overflow: hidden;
+  /* bottom-to-top wipe reveal; matches GSAP target inset(0% 0 0 0 round 4px) */
+  clip-path: inset(100% 0 0 0 round 0);
+  z-index: 1;
+  box-shadow: 40px 0 90px -50px rgba(42, 26, 18, 0.55);
+}
+/* decorators live in a viewport-height overlay (not the parallaxed/taller
+   image) so the frame + marks stay anchored to the visible area */
+.heroBleedDecor {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: stretch;
+  position: relative;
+  min-height: 100dvh;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 3;
+}
+.heroBleedImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 32%;
+  display: block;
+  filter: sepia(0.2) saturate(0.88) brightness(1.04);
+  transform: scale(1.05);
   will-change: transform;
 }
-.memory img {
-  width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
-  display: block;
-  filter: sepia(0.24) saturate(0.85) brightness(1.03);
+/* fade the top into the page's sand so the transparent nav (logo + links)
+   sits on a continuous light band — photo appears to develop from paper */
+.heroBleedImage::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 160px;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(239, 227, 204, 0.96) 0,
+    rgba(239, 227, 204, 0.72) 64px,
+    rgba(239, 227, 204, 0) 100%
+  );
 }
-.memoryCaption {
-  font-family: var(--font-caveat), cursive;
-  font-size: 20px;
-  text-align: center;
-  margin-top: 12px;
-  color: var(--espresso-soft);
-  line-height: 1.1;
+/* editorial decorators over the image — viewfinder frame + registration
+   marks + vertical spine label; revealed with the image (inside its box) */
+.heroBleedFrame {
+  position: absolute;
+  inset: 18px;
+  border: 1px solid rgba(247, 238, 221, 0.5);
+  pointer-events: none;
+  z-index: 3;
 }
-.memory1 {
-  top: 8%;
-  right: 7%;
-  width: 252px;
+/* four corner registration marks — frame pseudos cover TL/BR,
+   decor pseudos cover TR/BL, all sitting on the frame's corners */
+.heroBleedFrame::before,
+.heroBleedFrame::after,
+.heroBleedDecor::before,
+.heroBleedDecor::after {
+  content: "";
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  opacity: 0.7;
+  z-index: 3;
+  background:
+    linear-gradient(var(--paper), var(--paper)) center / 100% 1px no-repeat,
+    linear-gradient(var(--paper), var(--paper)) center / 1px 100% no-repeat;
 }
-.memory2 {
+.heroBleedFrame::before {
+  top: -8px;
+  left: -8px;
+}
+.heroBleedFrame::after {
+  bottom: -8px;
+  right: -8px;
+}
+.heroBleedDecor::before {
+  top: 11px;
+  right: 11px;
+}
+.heroBleedDecor::after {
+  bottom: 11px;
+  left: 11px;
+}
+/* peach craft seal — focal stamp, opaque so it reads over any photo region */
+.heroBleedSeal {
+  position: absolute;
+  top: 116px;
+  right: 42px;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  background: var(--peach);
+  color: var(--espresso);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  transform: rotate(-8deg);
+  box-shadow: 0 14px 28px -10px rgba(42, 26, 18, 0.55);
+  z-index: 4;
+}
+.heroBleedSeal::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(42, 26, 18, 0.32);
+  border-radius: 50%;
+}
+.heroBleedSealStar {
+  font-family: var(--font-newsreader), Georgia, serif;
+  font-size: 1.05rem;
+  line-height: 1;
+}
+.heroBleedSealText {
+  font-family: var(--font-dm-sans), sans-serif;
+  font-size: 0.52rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.heroBleedSpine {
+  position: absolute;
+  left: 30px;
   top: 50%;
-  right: 25%;
-  width: 212px;
+  transform: translateY(-50%) rotate(180deg);
+  writing-mode: vertical-rl;
+  font-family: var(--font-dm-sans), sans-serif;
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: rgba(247, 238, 221, 0.92);
+  text-shadow: 0 1px 10px rgba(42, 26, 18, 0.65);
+  pointer-events: none;
+  z-index: 3;
 }
-.memory3 {
-  bottom: 8%;
-  right: 9%;
-  width: 224px;
+/* craft accent — Mansalva script tag straddling the image edge for depth.
+   a section child (not inside the clipped image) so it isn't masked */
+.heroBleedTag {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: end;
+  justify-self: end;
+  position: relative;
+  margin-bottom: clamp(3rem, 9vh, 6rem);
+  transform: translateX(48%) rotate(-3deg);
+  background: var(--paper);
+  color: var(--espresso);
+  font-family: var(--font-caveat), cursive;
+  font-size: 1.5rem;
+  line-height: 1;
+  padding: 0.7rem 1.15rem 0.7rem 1.5rem;
+  box-shadow: 0 14px 30px -12px rgba(42, 26, 18, 0.4);
+  border: 1px solid var(--line);
+  z-index: 6;
+  white-space: nowrap;
 }
-.memory4 {
-  top: 30%;
-  right: 39%;
-  width: 182px;
+.heroBleedTag::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--peach);
+  transform: translateY(-50%);
 }
-@media (max-width: 1280px) {
-  .memory4 {
-    display: none;
-  }
+.heroBleedContent {
+  grid-column: 2;
+  grid-row: 1;
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 7.5rem 0 3rem;
+  min-width: 0;
 }
-@media (max-width: 1100px) {
-  .memory2 {
-    display: none;
-  }
+.heroBleedContent .heroEyebrow {
+  margin-bottom: 1.5rem;
+}
+.heroBleedHeadline {
+  font-family: var(--font-newsreader), Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(2.5rem, 5.2vw, 5rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--espresso);
+  max-width: 13ch;
+  margin: 0;
+  position: relative;
+  z-index: 5;
+}
+.heroBleedHeadline :global(.char) {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.45em) rotate(4deg);
+  will-change: transform, opacity;
+}
+.heroBleedContent .heroSub {
+  margin-top: 1.75rem;
+}
+.heroBleedContent .heroCtas {
+  margin-top: 1.75rem;
+}
+.heroBleedMeta {
+  margin-top: 2.75rem;
+  display: flex;
+  gap: clamp(1.5rem, 3vw, 3rem);
+  flex-wrap: wrap;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--line);
+}
+.heroBleedMeta > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
 }
 @media (max-width: 1024px) {
-  .memory1,
-  .memory3 {
+  .heroBleed {
+    grid-template-columns: 1fr;
+    /* stack normally on mobile — no fixed 100dvh row */
+    grid-template-rows: auto;
+    padding: 6.5rem 1.25rem 3rem;
+    row-gap: 2rem;
+  }
+  .heroBleedImage {
+    grid-column: 1;
+    grid-row: auto;
+    align-self: auto;
+    min-height: 54vh;
+    max-height: 64vh;
+    box-shadow: 0 30px 70px -40px rgba(42, 26, 18, 0.5);
+  }
+  .heroBleedDecor {
+    grid-row: 1;
+    min-height: 0;
+  }
+  .heroBleedSpine {
     display: none;
   }
-}
-@media (max-width: 760px) {
-  .memory {
-    display: none;
+  .heroBleedTag {
+    grid-column: 1;
+    grid-row: 1;
+    margin: 0 1rem 1rem 0;
+    transform: rotate(-3deg);
   }
-  .hero {
-    padding: 7rem 1.25rem 4rem;
+  .heroBleedContent {
+    grid-column: 1;
+    grid-row: auto;
+    justify-content: flex-start;
+    padding: 0;
+  }
+  .heroBleedHeadline {
+    font-size: clamp(2.5rem, 10vw, 3.75rem);
   }
 }
 
@@ -573,7 +711,7 @@ html {
   position: relative;
 }
 .manifestoContainer {
-  max-width: 900px;
+  max-width: 960px;
   margin: 0 auto;
 }
 .manifestoText {
@@ -588,7 +726,7 @@ html {
 }
 .manifestoText :global(.word) {
   opacity: 0.22;
-  transition: opacity 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: opacity 0.25s ease-out;
   display: inline-block;
 }
 .manifestoText :global(.word.inked) {
@@ -627,48 +765,158 @@ html {
   overflow: hidden;
 }
 .scaleImage {
-  width: 40vmin;
-  height: 60vmin;
+  /* 4:3 landscape */
+  width: 64vmin;
+  height: 48vmin;
   object-fit: cover;
-  border-radius: 50%;
+  /* rounded rectangle (not an oval) — GSAP expands it to full-bleed 0% */
+  border-radius: 28px;
   filter: sepia(0.18) saturate(0.87) brightness(1.03);
   box-shadow: 0 30px 80px rgba(42, 26, 18, 0.3);
   will-change: width, height, border-radius;
 }
+/* full-frame editorial caption revealed once the image fills the screen:
+   headline top-left, label bottom-left, note bottom-right, faded wordmark */
 .scaleCaption {
   position: absolute;
-  bottom: 4rem;
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
-  color: var(--paper);
+  inset: 0;
   z-index: 5;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "head head"
+    ".    ."
+    "label note";
+  gap: 1rem;
+  padding: clamp(6rem, 12vh, 9rem) clamp(1.5rem, 5vw, 5rem)
+    clamp(2rem, 5vh, 4rem);
+  color: var(--paper);
   opacity: 0;
-  transition: opacity 0.8s ease;
+  transition: opacity 0.9s ease;
   pointer-events: none;
-  width: 90%;
-  max-width: 620px;
 }
 .scaleCaption.in {
   opacity: 1;
 }
-.captionLabel {
-  display: block;
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.24em;
-  color: var(--peach);
-  margin-bottom: 0.5rem;
+/* scrim so the light caption text stays legible over the photo */
+.scaleCaption::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  /* darkness concentrated in the top + bottom bands where the text sits,
+     so the headline/note read while the centre (subject + wordmark) stays vivid */
+  background: linear-gradient(
+    to bottom,
+    rgba(20, 13, 9, 0.66) 0%,
+    rgba(20, 13, 9, 0.58) 22%,
+    rgba(20, 13, 9, 0.12) 42%,
+    rgba(20, 13, 9, 0.12) 60%,
+    rgba(20, 13, 9, 0.58) 80%,
+    rgba(20, 13, 9, 0.68) 100%
+  );
+  pointer-events: none;
 }
-.captionText {
+.scaleWordmark {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-family: var(--font-newsreader), Georgia, serif;
   font-style: italic;
   font-weight: 300;
-  font-size: 1.35rem;
-  max-width: 40ch;
-  line-height: 1.4;
-  margin: 0 auto;
-  text-shadow: 0 2px 20px rgba(42, 26, 18, 0.5);
+  font-size: clamp(6rem, 24vw, 22rem);
+  line-height: 1;
+  color: rgba(247, 238, 221, 0.16);
+  pointer-events: none;
+  user-select: none;
+}
+.captionHeadline {
+  grid-area: head;
+  align-self: start;
+  justify-self: start;
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-newsreader), Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(2rem, 5vw, 4.5rem);
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  max-width: 16ch;
+  margin: 0;
+  color: #fff;
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.92),
+    0 0 4px rgba(0, 0, 0, 0.85),
+    0 0 22px rgba(0, 0, 0, 0.6);
+}
+.captionLabel {
+  grid-area: label;
+  align-self: end;
+  justify-self: start;
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-dm-sans), sans-serif;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  color: var(--peach);
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.9),
+    0 0 6px rgba(0, 0, 0, 0.7);
+}
+.captionLabel::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--peach);
+}
+.captionNote {
+  grid-area: note;
+  align-self: end;
+  justify-self: end;
+  position: relative;
+  z-index: 1;
+  text-align: right;
+  max-width: 48ch;
+  margin: 0;
+  font-family: var(--font-dm-sans), sans-serif;
+  font-size: clamp(1.2rem, 1.9vw, 1.6rem);
+  line-height: 1.5;
+  font-weight: 500;
+  color: #fff;
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.92),
+    0 0 4px rgba(0, 0, 0, 0.85),
+    0 0 18px rgba(0, 0, 0, 0.6);
+}
+@media (max-width: 760px) {
+  .scaleCaption {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "head"
+      "note"
+      "label";
+    align-content: space-between;
+    padding: 6rem 1.5rem 3rem;
+    gap: 1.5rem;
+  }
+  .captionNote {
+    justify-self: start;
+    text-align: left;
+    max-width: 40ch;
+  }
+  .scaleWordmark {
+    font-size: clamp(5rem, 42vw, 13rem);
+  }
 }
 
 /* ============ JOURNEY ============ */
@@ -676,9 +924,31 @@ html {
   background: var(--paper);
   position: relative;
 }
+/* faint sewing-pattern grid under the whole timeline */
+.journey::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      transparent 0 47px,
+      rgba(191, 86, 56, 0.05) 47px 48px
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0 47px,
+      rgba(191, 86, 56, 0.05) 47px 48px
+    );
+}
 .journeyHeader {
-  padding: 8rem 2.5rem 4rem;
+  padding: 8rem 2.5rem 3rem;
   max-width: 1400px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 .journeyPin {
   height: 100vh;
@@ -688,59 +958,152 @@ html {
   align-items: center;
 }
 .journeyTrack {
+  --seam-y: 32px; /* length of the thread dropping below each card */
   display: flex;
-  align-items: center;
-  gap: 2rem;
-  padding: 0 6vw;
+  align-items: flex-end;
+  gap: clamp(2.5rem, 5vw, 6rem);
+  padding: 0 10vw var(--seam-y);
+  position: relative;
   will-change: transform;
 }
+
+/* ---- milestone cards: varied sizes, image-forward ---- */
 .milestone {
-  flex: 0 0 400px;
-  height: min(64vh, 600px);
-  background: var(--cream);
-  padding: 1.9rem;
-  border: 1px solid var(--line-soft);
+  flex: 0 0 var(--w, 400px);
+  width: var(--w, 400px);
+  height: var(--h, min(56vh, 520px));
+  background: var(--paper);
+  padding: 0.85rem 0.85rem 1.35rem;
   display: flex;
   flex-direction: column;
   position: relative;
-  transition: transform 0.4s ease;
+  z-index: 1;
+  box-shadow:
+    0 2px 4px rgba(42, 26, 18, 0.05),
+    0 24px 48px -30px rgba(42, 26, 18, 0.4);
+  transition:
+    transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
+.milestone:nth-child(3) {
+  --w: clamp(300px, 24vw, 420px);
+  --h: min(50vh, 460px);
+}
+.milestone:nth-child(4) {
+  --w: clamp(280px, 22vw, 380px);
+  --h: min(58vh, 540px);
+}
+.milestone:nth-child(5) {
+  --w: clamp(320px, 25vw, 460px);
+  --h: min(46vh, 420px);
+}
+.milestone:nth-child(6) {
+  --w: clamp(280px, 22vw, 380px);
+  --h: min(54vh, 500px);
+}
+.milestone:nth-child(7) {
+  --w: clamp(300px, 24vw, 420px);
+  --h: min(50vh, 470px);
+}
+/* the destination — "Hôm nay" — is the hero: biggest and deepest */
+.milestoneCurrent {
+  --w: clamp(380px, 32vw, 560px) !important;
+  --h: min(68vh, 660px) !important;
+  background: var(--cream);
+  box-shadow:
+    0 2px 4px rgba(42, 26, 18, 0.06),
+    0 40px 70px -30px rgba(42, 26, 18, 0.5),
+    0 0 0 1px rgba(191, 86, 56, 0.12);
+}
+.milestone:hover {
+  transform: translateY(-12px);
+  z-index: 3;
+  box-shadow:
+    0 2px 4px rgba(42, 26, 18, 0.08),
+    0 44px 72px -28px rgba(42, 26, 18, 0.48),
+    0 16px 34px -14px rgba(191, 86, 56, 0.32);
+}
+
+/* vertical thread dropping from each card to its knot */
 .milestone::before {
   content: "";
   position: absolute;
-  top: -8px;
-  left: 2rem;
-  width: 16px;
-  height: 16px;
-  background: var(--peach);
+  left: 50%;
+  bottom: calc(-1 * var(--seam-y));
+  width: 1px;
+  height: var(--seam-y);
+  background: var(--espresso-mute);
+  opacity: 0.5;
+  transform: translateX(-50%);
+  z-index: 0;
+}
+/* knot at the end of the thread */
+.milestone::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: calc(-1 * var(--seam-y));
+  width: 11px;
+  height: 11px;
   border-radius: 50%;
-  border: 3px solid var(--paper);
+  background: var(--paper);
+  border: 2px solid var(--espresso-mute);
+  transform: translate(-50%, 50%);
+  transition:
+    border-color 0.4s ease,
+    background 0.4s ease;
+  z-index: 2;
 }
-.milestoneYear {
+.milestone:hover::after {
+  border-color: var(--terracotta);
+  background: var(--peach);
+}
+.milestoneCurrent::after {
+  width: 15px;
+  height: 15px;
+  background: var(--terracotta);
+  border-color: var(--terracotta);
+  animation: journeyPulse 2.4s ease-in-out infinite;
+}
+@keyframes journeyPulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 5px var(--paper),
+      0 0 14px rgba(191, 86, 56, 0.45);
+  }
+  50% {
+    box-shadow:
+      0 0 0 5px var(--paper),
+      0 0 22px rgba(191, 86, 56, 0.75);
+  }
+}
+
+/* oversized outlined chapter numeral, bleeding above the card */
+.stepNum {
+  position: absolute;
+  top: -0.62em;
+  right: 0.4rem;
   font-family: var(--font-newsreader), Georgia, serif;
+  font-weight: 400;
   font-style: italic;
-  font-weight: 300;
-  font-size: 2.5rem;
-  color: var(--terracotta);
+  font-size: clamp(5rem, 8vw, 8.5rem);
   line-height: 1;
-  margin-bottom: 0.75rem;
+  color: transparent;
+  -webkit-text-stroke: 1.4px rgba(191, 86, 56, 0.32);
+  z-index: 4;
+  pointer-events: none;
+  letter-spacing: -0.03em;
 }
-.milestoneTitle {
-  font-family: var(--font-newsreader), Georgia, serif;
-  font-weight: 500;
-  font-size: 1.2rem;
-  color: var(--espresso);
-  margin: 0 0 0.75rem;
-  line-height: 1.2;
+.milestoneCurrent .stepNum {
+  color: var(--terracotta);
+  -webkit-text-stroke: 0;
+  opacity: 0.9;
 }
-.milestoneText {
-  font-size: 0.9rem;
-  color: var(--espresso-soft);
-  line-height: 1.5;
-  margin: 0 0 1rem;
-}
+
+/* image dominates the card */
 .milestoneImgWrap {
-  margin-top: auto;
+  position: relative;
   width: 100%;
   flex: 1 1 auto;
   min-height: 0;
@@ -751,34 +1114,67 @@ html {
   height: 100%;
   object-fit: cover;
   filter: sepia(0.18) saturate(0.87) brightness(1.03);
+  transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.journeyProgress {
+.milestone:hover .milestoneImgWrap img {
+  transform: scale(1.06);
+}
+/* garment-label style year tag pinned on the photo */
+.yearTag {
   position: absolute;
-  bottom: 2.5rem;
-  left: 6vw;
-  right: 6vw;
-  height: 1px;
-  background: var(--line);
+  left: 0;
+  bottom: 1rem;
+  font-family: var(--font-newsreader), Georgia, serif;
+  font-style: italic;
+  font-size: 1.15rem;
+  color: var(--paper);
+  background: var(--espresso);
+  padding: 0.28rem 0.9rem 0.32rem 0.75rem;
+  letter-spacing: 0.01em;
+  box-shadow: 0 4px 12px -4px rgba(42, 26, 18, 0.5);
+}
+.milestoneCurrent .yearTag {
+  background: var(--terracotta);
+}
+.milestoneMeta {
+  padding: 1.75rem 0.5rem 0;
+}
+.milestoneTitle {
+  font-family: var(--font-newsreader), Georgia, serif;
+  font-weight: 500;
+  font-size: 1.35rem;
+  color: var(--espresso);
+  margin: 0 0 0.4rem;
+  line-height: 1.15;
+}
+.milestoneCurrent .milestoneTitle {
+  font-size: 1.6rem;
+}
+.milestoneText {
+  font-size: 0.9rem;
+  color: var(--espresso-soft);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.journeyProgress {
+  display: none;
 }
 .progressBar {
   display: block;
-  height: 100%;
-  background: var(--terracotta);
-  transform-origin: left;
-  transform: scaleX(0);
-  transition: transform 0.1s linear;
 }
 .journeyHint {
   position: absolute;
-  bottom: 1.5rem;
-  right: 6vw;
+  bottom: 1.75rem;
+  right: 10vw;
   font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.24em;
   color: var(--espresso-mute);
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.55rem;
+  z-index: 4;
 }
 .journeyHint::after {
   content: "→";
@@ -801,15 +1197,30 @@ html {
   }
   .journeyTrack {
     flex-direction: column;
+    align-items: stretch;
     padding: 0;
-    gap: 1.5rem;
+    gap: 2.25rem;
   }
   .milestone {
-    flex: 0 0 auto;
+    --w: 100% !important;
+    --h: auto !important;
     width: 100%;
     height: auto;
   }
-  .journeyProgress,
+  .milestone:hover {
+    transform: none;
+  }
+  .stepNum {
+    top: auto;
+    bottom: 0.3rem;
+    right: 0.6rem;
+    font-size: 4rem;
+    z-index: 0; /* sit behind the text as a watermark on mobile */
+  }
+  .milestoneMeta {
+    position: relative;
+    z-index: 1;
+  }
   .journeyHint {
     display: none;
   }
@@ -826,42 +1237,89 @@ html {
   overflow: hidden;
 }
 .certHeader {
-  max-width: 820px;
-  margin-bottom: 4rem;
+  max-width: 960px;
+  margin: 0 auto 4rem;
 }
 .certSelfstudy {
   margin-top: 2rem;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.65rem 0.5rem;
   align-items: center;
 }
 .certSelfstudy .ssLabel {
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.18em;
   color: var(--espresso-mute);
-  margin-right: 0.5rem;
+  margin-right: 0.35rem;
 }
+/* self-study tags read as small fabric swatches — a punched grommet
+   on the left, tacked on at a slight tilt like samples pinned to a board */
 .certSelfstudy .chip {
-  font-size: 0.8rem;
+  position: relative;
+  font-size: 0.78rem;
   color: var(--sage-deep);
-  padding: 0.35rem 0.8rem;
+  padding: 0.4rem 0.85rem 0.4rem 1.55rem;
   border: 1px solid var(--sage);
-  border-radius: 999px;
-  background: rgba(138, 154, 126, 0.1);
+  border-radius: 3px 8px 8px 3px;
+  background: var(--paper);
+  box-shadow: 0 2px 6px -3px rgba(42, 26, 18, 0.2);
+  transform: rotate(var(--tilt, 0deg));
+  transition:
+    transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.35s ease;
 }
+.certSelfstudy .chip:nth-child(odd) {
+  --tilt: -1.5deg;
+}
+.certSelfstudy .chip:nth-child(even) {
+  --tilt: 1.5deg;
+}
+.certSelfstudy .chip::before {
+  content: "";
+  position: absolute;
+  left: 0.6rem;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--cream);
+  border: 1px solid var(--sage-deep);
+  transform: translateY(-50%);
+}
+.certSelfstudy .chip:hover {
+  transform: rotate(0deg) translateY(-2px);
+  box-shadow: 0 10px 16px -6px rgba(42, 26, 18, 0.28);
+}
+
+/* certificates hang like tags clipped to a line above the work table */
 .certWall {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
-  gap: 3rem 3rem;
+  gap: 4rem 3.5rem;
   justify-content: center;
   align-items: flex-start;
-  perspective: 1000px;
+  padding-top: 2.5rem;
+}
+.certWall::before {
+  content: "";
+  position: absolute;
+  top: 0.9rem;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--espresso-mute) 0 9px,
+    transparent 9px 15px
+  );
+  opacity: 0.35;
 }
 .certificate {
   background: var(--paper);
-  padding: 18px 18px 60px;
+  padding: 20px 20px 0;
   box-shadow:
     0 30px 60px -20px rgba(42, 26, 18, 0.25),
     0 0 0 1px rgba(42, 26, 18, 0.04);
@@ -871,7 +1329,7 @@ html {
     box-shadow 0.7s ease,
     opacity 1s ease;
   position: relative;
-  width: 320px;
+  width: clamp(320px, 27vw, 440px);
   cursor: pointer;
   opacity: 0;
 }
@@ -879,58 +1337,134 @@ html {
   opacity: 1;
 }
 .certificate:hover {
-  transform: rotate(0deg) translateY(-12px) scale(1.04);
-  box-shadow: 0 45px 80px -20px rgba(42, 26, 18, 0.35);
+  transform: rotate(0deg) translateY(-14px) scale(1.04);
+  box-shadow:
+    0 10px 24px -10px rgba(191, 86, 56, 0.22),
+    0 48px 80px -22px rgba(42, 26, 18, 0.35);
   z-index: 10;
 }
-.certificate::before {
+.certificate:hover .certClip {
+  transform: translateX(-50%) rotate(7deg);
+}
+
+/* a little wooden clothespin standing in for tape or a paperclip */
+.certClip {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  width: 15px;
+  height: 34px;
+  border-radius: 3px;
+  background: linear-gradient(
+    to right,
+    var(--paper-deep) 0 42%,
+    var(--peach-deep) 42% 58%,
+    var(--paper-deep) 58% 100%
+  );
+  box-shadow: 0 3px 4px rgba(42, 26, 18, 0.28);
+  transform: translateX(-50%) rotate(var(--clip-tilt, -3deg));
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  z-index: 2;
+}
+.certificate:nth-child(2) .certClip {
+  --clip-tilt: 4deg;
+}
+.certClip::before {
   content: "";
   position: absolute;
-  top: -12px;
+  top: 8px;
   left: 50%;
-  transform: translateX(-50%) rotate(-2deg);
-  width: 60px;
-  height: 22px;
-  background: rgba(216, 152, 144, 0.4);
-  border: 1px dashed rgba(42, 26, 18, 0.15);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--espresso-mute);
+  transform: translateX(-50%);
 }
-.certificate img {
+
+.certPhoto {
+  position: relative;
+}
+.certPhoto img {
   width: 100%;
   aspect-ratio: 4/3;
   object-fit: cover;
   display: block;
   filter: sepia(0.2) saturate(0.85) brightness(1.05);
 }
+/* the grade, stamped on like a wax seal on a tailor's docket */
+.certStamp {
+  position: absolute;
+  bottom: -20px;
+  right: -16px;
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  border: 1.5px dashed var(--terracotta);
+  background: var(--cream);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(-8deg);
+  box-shadow: 0 8px 16px -8px rgba(42, 26, 18, 0.4);
+  z-index: 3;
+}
+.certStampScore {
+  font-family: var(--font-caveat), cursive;
+  font-size: 1.45rem;
+  line-height: 1;
+  color: var(--terracotta);
+}
+.certStampGrade {
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--espresso-soft);
+  margin-top: 2px;
+}
+
 .certBody {
-  margin-top: 14px;
-  text-align: center;
+  margin-top: 30px;
+  padding: 1rem 0.15rem 1.5rem;
+  text-align: left;
+  border-top: 1px dashed var(--line);
 }
 .certYear {
   font-family: var(--font-caveat), cursive;
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   color: var(--terracotta);
   display: block;
 }
 .certName {
   font-family: var(--font-newsreader), Georgia, serif;
   font-weight: 500;
-  font-size: 0.98rem;
+  font-size: 1.15rem;
   color: var(--espresso);
-  margin: 0.35rem 0 0.25rem;
-  line-height: 1.25;
+  margin: 0.35rem 0 0.35rem;
+  line-height: 1.3;
 }
 .certIssuer {
-  font-size: 0.72rem;
+  font-size: 0.76rem;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   color: var(--espresso-mute);
 }
 @media (max-width: 760px) {
   .certificates {
     padding: 5rem 1.25rem;
   }
+  .certWall {
+    padding-top: 2rem;
+  }
+  .certWall::before {
+    left: 5%;
+    right: 5%;
+  }
   .certificate {
-    width: 260px;
+    width: min(84vw, 360px);
+  }
+  .certificate:nth-child(2) {
+    margin-top: 0;
   }
 }
 
@@ -941,7 +1475,7 @@ html {
 }
 .projectsHeader {
   padding: 0 2.5rem;
-  max-width: 1100px;
+  max-width: 1400px;
   margin: 0 auto 4rem;
 }
 .projectsStack {
@@ -1219,7 +1753,7 @@ html {
 }
 .storyHeader {
   padding: 8rem 2.5rem 2rem;
-  max-width: 1100px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 .storyTrack {
@@ -1326,13 +1860,14 @@ html {
 .contact {
   padding: 8rem 2.5rem;
   background: var(--sand);
+  max-width: 1400px;
+  margin: 0 auto;
 }
 .contactHeader {
-  max-width: 820px;
-  margin-bottom: 4rem;
+  margin: 0 auto 4rem;
 }
 .contactRows {
-  max-width: 1100px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 .contactRow {
@@ -1369,6 +1904,7 @@ html {
   color: var(--espresso);
   transition: color 0.4s ease;
   line-height: 1.2;
+  text-align: right;
 }
 .contactRow:hover .contactValue {
   color: var(--terracotta);
@@ -1395,6 +1931,9 @@ html {
     grid-template-columns: 1fr;
     gap: 0.5rem;
     padding: 2rem 0;
+  }
+  .contactValue {
+    text-align: left;
   }
   .contactArrow {
     display: none;
@@ -1446,9 +1985,15 @@ html {
   .introName span {
     transform: none !important;
   }
-  .heroHeadline :global(.char) {
+  .heroBleedHeadline :global(.char) {
     opacity: 1 !important;
     transform: none !important;
+  }
+  .heroBleedImage {
+    clip-path: inset(0% 0 0 0 round 0) !important;
+  }
+  .heroBleedImage img {
+    transform: scale(1) !important;
   }
   .inlinePhoto {
     opacity: 1 !important;

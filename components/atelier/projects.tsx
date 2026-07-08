@@ -63,7 +63,7 @@ export function Projects() {
           Dự án tiêu biểu
         </span>
         <h2 className={`${styles.sectionTitle} ${styles.reveal}`} data-reveal>
-          Bốn dự án, <em>và cách chúng thành hình.</em>
+          Thành phẩm may tiêu biểu <br /> <em>và cách chúng thành hình.</em>
         </h2>
         <p className={`${styles.sectionIntro} ${styles.reveal}`} data-reveal>
           Mỗi món bắt đầu từ một ảnh tham khảo, một bản phác, một mảnh vải,

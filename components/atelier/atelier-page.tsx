@@ -10,7 +10,7 @@ import Lenis from "lenis";
 import styles from "@/app/atelier.module.css";
 import { IntroCurtain } from "./intro-curtain";
 import { SiteNav } from "./site-nav";
-import { Hero } from "./hero";
+import { HeroBleed } from "./hero-bleed";
 import { Marquee } from "./marquee";
 import { Manifesto } from "./manifesto";
 import { SignatureScale } from "./signature-scale";
@@ -161,7 +161,6 @@ export function AtelierPage() {
         });
       }
 
-      const inlinePhoto = root.querySelector("[data-inline-photo]");
       const chars = root.querySelectorAll(".char");
       if (!reducedMotion) {
         gsap.to(chars, {
@@ -173,49 +172,31 @@ export function AtelierPage() {
           ease: "power3.out",
           delay: heroStart,
         });
-        if (inlinePhoto) {
-          gsap.to(inlinePhoto, {
-            opacity: 1,
-            scale: 1,
-            rotate: 0,
-            duration: 1,
-            ease: "power3.out",
-            delay: heroStart + 0.6,
-          });
-        }
       } else {
         gsap.set(chars, { opacity: 1, y: 0, rotate: 0 });
-        if (inlinePhoto) gsap.set(inlinePhoto, { opacity: 1, scale: 1, rotate: 0 });
       }
 
-      // ---- Floating memory polaroids ----
-      const memories = gsap.utils.toArray<HTMLElement>("[data-memory]", root);
-      const baseRots = [-7, 5, -3, 9];
-      if (!reducedMotion && window.matchMedia("(min-width: 1025px)").matches) {
-        memories.forEach((m, i) => gsap.set(m, { rotation: baseRots[i] || 0 }));
-        const xTo = memories.map((m) =>
-          gsap.quickTo(m, "x", { duration: 1.2, ease: "power3" })
-        );
-        const yTo = memories.map((m) =>
-          gsap.quickTo(m, "y", { duration: 1.2, ease: "power3" })
-        );
-        const onMouseMove = (e: MouseEvent) => {
-          const x = (e.clientX / window.innerWidth - 0.5) * 2;
-          const y = (e.clientY / window.innerHeight - 0.5) * 2;
-          memories.forEach((m, i) => {
-            const depth = parseFloat(m.dataset.depth || "0.3");
-            xTo[i](x * depth * 30);
-            yTo[i](y * depth * 30);
+      // ---- Hero image: reveal + scroll parallax ----
+      const heroImage = root.querySelector<HTMLElement>("[data-hero-image]");
+      const heroImagePhoto = heroImage?.querySelector("img") ?? null;
+      if (heroImage && heroImagePhoto) {
+        if (!reducedMotion) {
+          gsap.to(heroImage, {
+            clipPath: "inset(0% 0 0 0 round 4px)",
+            duration: 1.3,
+            ease: "power3.out",
+            delay: heroStart + 0.35,
           });
-        };
-        window.addEventListener("mousemove", onMouseMove, { passive: true });
-        cleanups.push(() => window.removeEventListener("mousemove", onMouseMove));
+          gsap.to(heroImagePhoto, {
+            scale: 1,
+            duration: 1.3,
+            ease: "power3.out",
+            delay: heroStart + 0.35,
+          });
 
-        const heroSection = root.querySelector("[data-hero-section]");
-        memories.forEach((m) => {
-          const depth = parseFloat(m.dataset.depth || "0.3");
-          gsap.to(m, {
-            yPercent: -depth * 80,
+          const heroSection = root.querySelector("[data-hero-section]");
+          gsap.to(heroImage, {
+            yPercent: -12,
             ease: "none",
             scrollTrigger: {
               trigger: heroSection,
@@ -224,14 +205,13 @@ export function AtelierPage() {
               scrub: 1,
             },
           });
-        });
-      } else if (reducedMotion) {
-        memories.forEach((m, i) => {
-          m.style.transform = `rotate(${baseRots[i]}deg)`;
-        });
+        } else {
+          gsap.set(heroImage, { clipPath: "inset(0% 0 0 0 round 4px)" });
+          gsap.set(heroImagePhoto, { scale: 1 });
+        }
       }
 
-      // ---- Manifesto word-by-word ----
+      // ---- Manifesto word-by-word (scroll-scrubbed) ----
       const manifestoText = root.querySelector<HTMLElement>("[data-manifesto-text]");
       const manifestoSig = root.querySelector<HTMLElement>("[data-manifesto-sig]");
       if (manifestoText && manifestoSig) {
@@ -239,44 +219,25 @@ export function AtelierPage() {
         manifestoText.innerHTML = words
           .map((w) => `<span class="word">${w}</span>`)
           .join(" ");
-        let manifestoTriggered = false;
-        const timeouts: number[] = [];
-        const triggerManifesto = () => {
-          if (manifestoTriggered) return;
-          manifestoTriggered = true;
-          const wordEls = manifestoText.querySelectorAll(".word");
-          wordEls.forEach((w, i) => {
-            timeouts.push(
-              window.setTimeout(() => w.classList.add("inked"), i * 55)
-            );
+        const wordEls = manifestoText.querySelectorAll(".word");
+
+        if (reducedMotion) {
+          wordEls.forEach((w) => w.classList.add("inked"));
+          manifestoSig.classList.add(styles.in);
+        } else {
+          const manifestoTrigger = ScrollTrigger.create({
+            trigger: manifestoText,
+            start: "top 80%",
+            end: "bottom 45%",
+            scrub: 1,
+            onUpdate: (self) => {
+              const litCount = Math.round(self.progress * wordEls.length);
+              wordEls.forEach((w, i) => w.classList.toggle("inked", i < litCount));
+              manifestoSig.classList.toggle(styles.in, self.progress > 0.92);
+            },
           });
-          timeouts.push(
-            window.setTimeout(
-              () => manifestoSig.classList.add(styles.in),
-              wordEls.length * 55 + 200
-            )
-          );
-        };
-        const manifestoObserver = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                triggerManifesto();
-                manifestoObserver.unobserve(entry.target);
-              }
-            });
-          },
-          { threshold: 0.1, rootMargin: "0px 0px -10% 0px" }
-        );
-        manifestoObserver.observe(manifestoText);
-        const fallback = window.setTimeout(() => {
-          if (!manifestoTriggered) triggerManifesto();
-        }, 3000);
-        cleanups.push(() => {
-          manifestoObserver.disconnect();
-          clearTimeout(fallback);
-          timeouts.forEach((t) => clearTimeout(t));
-        });
+          cleanups.push(() => manifestoTrigger.kill());
+        }
       }
 
       // ---- Signature scale moment ----
@@ -297,7 +258,7 @@ export function AtelierPage() {
               scrub: 1,
               anticipatePin: 1,
               onUpdate: (self) => {
-                scaleCaption.classList.toggle(styles.in, self.progress > 0.7);
+                scaleCaption.classList.toggle(styles.in, self.progress > 0.85);
               },
               onLeaveBack: () => scaleCaption.classList.remove(styles.in),
             },
@@ -378,7 +339,7 @@ export function AtelierPage() {
         certTimeouts.forEach((t) => clearTimeout(t));
       });
 
-      // ---- Project sticky stack (gentle dimming) ----
+      // ---- Project sticky stack (recede as the next card arrives) ----
       const projectCards = root.querySelectorAll<HTMLElement>("[data-project-card]");
       if (!reducedMotion && window.matchMedia("(min-width: 901px)").matches) {
         projectCards.forEach((card, i) => {
@@ -388,8 +349,8 @@ export function AtelierPage() {
               { filter: "brightness(1)" },
               {
                 opacity: 0.9,
-                scale: 0.995,
-                filter: "brightness(0.94)",
+                scale: 0.9,
+                filter: "brightness(0.9)",
                 ease: "none",
                 scrollTrigger: {
                   trigger: projectCards[i + 1],
@@ -404,27 +365,63 @@ export function AtelierPage() {
       }
 
       // ---- Craft story crossfade + tint shift ----
+      // Driven by ScrollTrigger (same clock as the rest of the page) instead of
+      // IntersectionObserver: with Lenis's eased scroll, a fast flick can move
+      // several viewport-heights in one frame, so IO's threshold-crossing
+      // entries for multiple chapters land in the same batch. Applying them
+      // via forEach in DOM order (not scroll order) let a stale earlier-chapter
+      // entry win over the correct later one, producing the flash/jump-back.
+      // ScrollTrigger re-derives the active chapter from the real scroll
+      // position on every tick, so there's no batching order to get wrong.
       const storySection = root.querySelector<HTMLElement>("[data-craft-story]");
       const storyImages = root.querySelectorAll<HTMLElement>("[data-story-img]");
       const chapters = root.querySelectorAll<HTMLElement>("[data-chapter-section]");
-      const chapterObserver = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting && entry.intersectionRatio > 0.4) {
-              const target = entry.target as HTMLElement;
-              const num = target.dataset.chapter;
-              const tint = target.dataset.tint;
-              storyImages.forEach((img) => {
-                img.classList.toggle(styles.active, img.dataset.chapter === num);
-              });
-              if (storySection && tint) storySection.style.backgroundColor = tint;
-            }
-          });
-        },
-        { threshold: [0.4, 0.6] }
+      const chapterTriggers = Array.from(chapters).map((chapterEl) =>
+        ScrollTrigger.create({
+          trigger: chapterEl,
+          start: "top center",
+          end: "bottom center",
+          onToggle: (self) => {
+            if (!self.isActive) return;
+            const num = chapterEl.dataset.chapter;
+            const tint = chapterEl.dataset.tint;
+            storyImages.forEach((img) => {
+              img.classList.toggle(styles.active, img.dataset.chapter === num);
+            });
+            if (storySection && tint) storySection.style.backgroundColor = tint;
+          },
+        })
       );
-      chapters.forEach((ch) => chapterObserver.observe(ch));
-      cleanups.push(() => chapterObserver.disconnect());
+      cleanups.push(() => chapterTriggers.forEach((st) => st.kill()));
+
+      // ---- Craft story image wipe (scroll-scrubbed clip-path reveal) ----
+      // Each chapter's image sits above the previous one (DOM order = stacking
+      // order) and wipes up from the bottom as its chapter scrolls into view,
+      // instead of crossfading. The reduced-motion fallback above still swaps
+      // visibility via the .active class untouched by this.
+      if (!reducedMotion) {
+        const storyImagesArr = Array.from(storyImages);
+        // Opacity is set once and left alone: clip-path is the sole visibility
+        // control from here on, overriding the .active class's opacity toggle.
+        gsap.set(storyImagesArr, { opacity: 1, scale: 1 });
+        storyImagesArr.forEach((img, i) => {
+          if (i === 0) return;
+          gsap.fromTo(
+            img,
+            { clipPath: "inset(100% 0 0 0)" },
+            {
+              clipPath: "inset(0% 0 0 0)",
+              ease: "none",
+              scrollTrigger: {
+                trigger: chapters[i],
+                start: "top 90%",
+                end: "top 30%",
+                scrub: 0.3,
+              },
+            }
+          );
+        });
+      }
 
       // ---- Generic reveal on scroll ----
       const revealEls = root.querySelectorAll<HTMLElement>("[data-reveal]");
@@ -495,7 +492,7 @@ export function AtelierPage() {
       <IntroCurtain />
       <SiteNav />
       <main>
-        <Hero />
+        <HeroBleed />
         <Marquee />
         <Manifesto />
         <SignatureScale />
