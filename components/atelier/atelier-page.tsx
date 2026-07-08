@@ -39,9 +39,17 @@ export function AtelierPage() {
       let heroStart = 0.3;
 
       // ---- Lenis smooth scroll, driven by GSAP's ticker ----
+      // duration+easing (rather than the snappier default lerp: 0.1) is the
+      // config Lenis's own docs use for a slower, buttery deceleration curve.
       let lenis: Lenis | null = null;
       if (!reducedMotion) {
-        lenis = new Lenis({ autoRaf: false });
+        lenis = new Lenis({
+          autoRaf: false,
+          duration: 1.2,
+          easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          wheelMultiplier: 1,
+          touchMultiplier: 2,
+        });
         const onLenisScroll = () => ScrollTrigger.update();
         lenis.on("scroll", onLenisScroll);
         const rafCallback = (time: number) => lenis?.raf(time * 1000);
@@ -131,11 +139,23 @@ export function AtelierPage() {
         textNodes.forEach((textNode) => {
           const text = textNode.textContent || "";
           const frag = document.createDocumentFragment();
-          [...text].forEach((char) => {
-            const span = document.createElement("span");
-            span.className = "char";
-            span.textContent = char === " " ? " " : char;
-            frag.appendChild(span);
+          const words = text.split(" ");
+          words.forEach((word, wi) => {
+            if (word) {
+              const wordSpan = document.createElement("span");
+              wordSpan.style.display = "inline-block";
+              wordSpan.style.whiteSpace = "nowrap";
+              [...word].forEach((char) => {
+                const charSpan = document.createElement("span");
+                charSpan.className = "char";
+                charSpan.textContent = char;
+                wordSpan.appendChild(charSpan);
+              });
+              frag.appendChild(wordSpan);
+            }
+            if (wi < words.length - 1) {
+              frag.appendChild(document.createTextNode(" "));
+            }
           });
           textNode.parentNode?.replaceChild(frag, textNode);
         });
