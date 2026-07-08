@@ -128,6 +128,7 @@ export function AtelierPage() {
       // ---- Hero headline per-character reveal ----
       const headline = root.querySelector<HTMLElement>("[data-hero-headline]");
       if (headline) {
+        headline.setAttribute("aria-label", (headline.textContent || "").trim());
         const walker = document.createTreeWalker(headline, NodeFilter.SHOW_TEXT);
         const textNodes: Text[] = [];
         let node: Node | null;
@@ -145,6 +146,7 @@ export function AtelierPage() {
               const wordSpan = document.createElement("span");
               wordSpan.style.display = "inline-block";
               wordSpan.style.whiteSpace = "nowrap";
+              wordSpan.setAttribute("aria-hidden", "true");
               [...word].forEach((char) => {
                 const charSpan = document.createElement("span");
                 charSpan.className = "char";
