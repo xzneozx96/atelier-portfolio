@@ -189,24 +189,85 @@ html {
 .navLinks a:hover::after {
   transform: scaleX(1);
 }
+.menuToggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 51;
+}
+.menuToggleBar {
+  display: block;
+  width: 22px;
+  height: 1.5px;
+  background: var(--espresso);
+  transition:
+    transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.menuToggleBar.menuToggleBarOpen:nth-child(1) {
+  transform: translateY(6.5px) rotate(45deg);
+}
+.menuToggleBar.menuToggleBarOpen:nth-child(2) {
+  opacity: 0;
+}
+.menuToggleBar.menuToggleBarOpen:nth-child(3) {
+  transform: translateY(-6.5px) rotate(-45deg);
+}
+.mobileMenu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 49;
+  display: none;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1.75rem;
+  padding: 2rem 2rem 6rem;
+  background: var(--paper);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease,
+    visibility 0.3s;
+}
+.mobileMenu a {
+  font-family: var(--font-newsreader), Georgia, serif;
+  font-style: italic;
+  font-size: 2rem;
+  color: var(--espresso);
+  text-decoration: none;
+}
 @media (max-width: 760px) {
   .siteNav {
     padding: 1rem 1.25rem;
     gap: 1rem;
   }
   .navLinks {
-    gap: 1rem;
-    font-size: 0.75rem;
-  }
-  .navLinks a:nth-child(n + 4) {
     display: none;
   }
-}
-@media (max-width: 560px) {
-  /* wordmark + links collide at phone widths (no mobile menu); keep the
-     "Q" mark, drop the long name so the nav links have room */
-  .atelierText {
-    display: none;
+  .menuToggle {
+    display: flex;
+  }
+  .mobileMenu {
+    display: flex;
+  }
+  .mobileMenuOpen {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
   }
 }
 
