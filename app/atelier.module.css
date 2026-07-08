@@ -549,8 +549,8 @@ html {
   align-self: end;
   justify-self: end;
   position: relative;
-  margin-bottom: clamp(3rem, 9vh, 6rem);
-  transform: translateX(48%) rotate(-3deg);
+  margin-bottom: clamp(4.5rem, 13vh, 8rem);
+  transform: translateX(22%) rotate(-3deg);
   background: var(--paper);
   color: var(--espresso);
   font-family: var(--font-caveat), cursive;
