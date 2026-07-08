@@ -12,6 +12,7 @@ export function SignatureScale() {
           alt="Bàn may tại nhà của Quỳnh"
           width={455}
           height={475}
+          loading="lazy"
         />
         <div className={styles.scaleCaption} data-scale-caption>
           <span className={styles.scaleWordmark} aria-hidden="true">

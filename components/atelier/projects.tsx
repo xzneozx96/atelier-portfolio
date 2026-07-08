@@ -86,6 +86,7 @@ export function Projects() {
                 className={styles.editorialImg}
                 width={700}
                 height={860}
+                loading="lazy"
               />
             </div>
             <div className={styles.projectBody}>

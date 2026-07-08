@@ -79,6 +79,7 @@ export function Journey() {
                   className={styles.editorialImg}
                   width={520}
                   height={620}
+                  loading="lazy"
                 />
                 <span className={styles.yearTag}>{m.year}</span>
               </div>

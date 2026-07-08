@@ -62,6 +62,7 @@ export function Certificates() {
                 className={styles.editorialImg}
                 width={320}
                 height={240}
+                loading="lazy"
               />
               <span className={styles.certStamp}>
                 <span className={styles.certStampScore}>{c.score}</span>

@@ -103,6 +103,7 @@ export function Shop() {
                   className={styles.editorialImg}
                   width={340}
                   height={450}
+                  loading="lazy"
                 />
                 <div className={styles.hangTag}>{p.name}</div>
               </div>

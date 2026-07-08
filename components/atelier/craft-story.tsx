@@ -64,6 +64,7 @@ export function CraftStory() {
                 alt={c.alt}
                 width={857}
                 height={863}
+                loading={i === 0 ? "eager" : "lazy"}
               />
             ))}
           </div>
