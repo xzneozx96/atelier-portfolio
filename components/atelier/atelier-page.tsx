@@ -502,10 +502,10 @@ export function AtelierPage() {
         <Manifesto />
         <SignatureScale />
         <Journey />
+        <CraftStory />
         <Certificates />
         <Projects />
         <Shop />
-        <CraftStory />
         <Contact />
         <SiteFooter />
       </main>

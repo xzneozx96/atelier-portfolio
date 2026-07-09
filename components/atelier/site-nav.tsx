@@ -5,9 +5,9 @@ import styles from "@/app/atelier.module.css";
 
 const LINKS = [
   { href: "#journey", label: "Hành trình" },
+  { href: "#story", label: "Câu chuyện" },
   { href: "#projects", label: "Dự án" },
   { href: "#shop", label: "Cửa hàng" },
-  { href: "#story", label: "Câu chuyện" },
   { href: "#contact", label: "Liên hệ" },
 ];
 
