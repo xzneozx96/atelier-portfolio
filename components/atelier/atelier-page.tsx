@@ -247,11 +247,18 @@ export function AtelierPage() {
       const scaleCaption = root.querySelector<HTMLElement>("[data-scale-caption]");
       if (scaleImage && scaleCaption) {
         if (!reducedMotion) {
+          // scale (not width/height) keeps the 4:3 card proportion intact as
+          // it grows, and composites cleanly instead of reclipping a rounded
+          // border-radius every frame
           gsap.to(scaleImage, {
-            width: "100%",
-            height: "100%",
-            borderRadius: "0%",
+            scale: 1,
             ease: "none",
+            onUpdate: () => {
+              // scrub eases the tween toward the scroll position, so gate on
+              // the tween's own progress rather than the raw scroll ratio
+              const current = Number(gsap.getProperty(scaleImage, "scale"));
+              scaleCaption.classList.toggle(styles.in, current > 0.98);
+            },
             scrollTrigger: {
               trigger: root.querySelector("[data-scale-section]"),
               start: "top top",
@@ -259,14 +266,10 @@ export function AtelierPage() {
               pin: true,
               scrub: 1,
               anticipatePin: 1,
-              onUpdate: (self) => {
-                scaleCaption.classList.toggle(styles.in, self.progress > 0.85);
-              },
-              onLeaveBack: () => scaleCaption.classList.remove(styles.in),
             },
           });
         } else {
-          gsap.set(scaleImage, { width: "100%", height: "100%", borderRadius: "0%" });
+          gsap.set(scaleImage, { scale: 1 });
           scaleCaption.classList.add(styles.in);
         }
       }
